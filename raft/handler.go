@@ -31,6 +31,7 @@ import (
 	"github.com/coreos/etcd/rafthttp"
 	"github.com/syndtr/goleveldb/leveldb"
 	"gopkg.in/fatih/set.v0"
+	"github.com/ethereum/go-ethereum/qmetrics"
 )
 
 type ProtocolManager struct {
@@ -877,6 +878,7 @@ func (pm *ProtocolManager) applyNewChainHead(block *types.Block) {
 		}
 
 		log.EmitCheckpoint(log.BlockCreated, "block", fmt.Sprintf("%x", block.Hash()))
+		qmetrics.UpdateCheckpointMetric()
 	}
 }
 
