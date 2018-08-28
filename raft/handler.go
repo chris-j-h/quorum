@@ -31,7 +31,7 @@ import (
 	"github.com/coreos/etcd/rafthttp"
 	"github.com/syndtr/goleveldb/leveldb"
 	"gopkg.in/fatih/set.v0"
-	"github.com/ethereum/go-ethereum/qmetrics"
+	"github.com/ethereum/go-ethereum/qcheckpoint"
 )
 
 type ProtocolManager struct {
@@ -533,10 +533,10 @@ func (pm *ProtocolManager) handleRoleChange(roleC <-chan interface{}) {
 			}
 
 			if intRole == minterRole {
-				log.EmitCheckpoint(log.BecameMinter)
+				qcheckpoint.Create(log.BecameMinter)
 				pm.minter.start()
 			} else { // verifier
-				log.EmitCheckpoint(log.BecameVerifier)
+				qcheckpoint.Create(log.BecameVerifier)
 				pm.minter.stop()
 			}
 
@@ -868,8 +868,7 @@ func (pm *ProtocolManager) applyNewChainHead(block *types.Block) {
 		}
 
 		for _, tx := range block.Transactions() {
-			log.EmitCheckpoint(log.TxAccepted, "tx", tx.Hash().Hex())
-			qmetrics.Emit(log.TxAccepted)
+			qcheckpoint.Create(log.TxAccepted, "tx", tx.Hash().Hex())
 		}
 
 		_, err := pm.blockchain.InsertChain([]*types.Block{block})
@@ -878,8 +877,7 @@ func (pm *ProtocolManager) applyNewChainHead(block *types.Block) {
 			panic(fmt.Sprintf("failed to extend chain: %s", err.Error()))
 		}
 
-		log.EmitCheckpoint(log.BlockCreated, "block", fmt.Sprintf("%x", block.Hash()))
-		qmetrics.Emit(log.BlockCreated)
+		qcheckpoint.Create(log.BlockCreated, "block", fmt.Sprintf("%x", block.Hash()))
 	}
 }
 

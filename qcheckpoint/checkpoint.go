@@ -1,8 +1,8 @@
-package qmetrics
+package qcheckpoint
 
 import (
-	"github.com/ethereum/go-ethereum/metrics"
 	"github.com/ethereum/go-ethereum/log"
+	"github.com/ethereum/go-ethereum/metrics"
 )
 
 var (
@@ -11,7 +11,12 @@ var (
 	txAcceptedMeter = metrics.NewRegisteredMeter("quorum/tx-accepted", nil)
 )
 
-func Emit(metricName string) {
+func Create(checkpointName string, logValues ...interface{}) {
+	log.EmitCheckpoint(checkpointName, logValues...)
+	record(checkpointName)
+}
+
+func record(metricName string) {
 	switch metricName {
 	case log.TxCreated:
 		txCreatedMeter.Mark(1)
