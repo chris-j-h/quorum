@@ -869,6 +869,7 @@ func (pm *ProtocolManager) applyNewChainHead(block *types.Block) {
 
 		for _, tx := range block.Transactions() {
 			log.EmitCheckpoint(log.TxAccepted, "tx", tx.Hash().Hex())
+			qmetrics.Emit(log.TxAccepted)
 		}
 
 		_, err := pm.blockchain.InsertChain([]*types.Block{block})
@@ -878,7 +879,7 @@ func (pm *ProtocolManager) applyNewChainHead(block *types.Block) {
 		}
 
 		log.EmitCheckpoint(log.BlockCreated, "block", fmt.Sprintf("%x", block.Hash()))
-		qmetrics.UpdateCheckpointMetric()
+		qmetrics.Emit(log.BlockCreated)
 	}
 }
 

@@ -16,6 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
 	"gopkg.in/fatih/set.v0"
+	"github.com/ethereum/go-ethereum/qmetrics"
 )
 
 // Snapshot
@@ -327,6 +328,7 @@ func (pm *ProtocolManager) logNewlyAcceptedTransactions(preSyncHead *types.Block
 	for _, block := range blocks {
 		for _, tx := range block.Transactions() {
 			log.EmitCheckpoint(log.TxAccepted, "tx", tx.Hash().Hex())
+			qmetrics.Emit(log.TxAccepted)
 		}
 	}
 }
