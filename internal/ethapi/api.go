@@ -50,7 +50,7 @@ import (
 	"github.com/ethereum/go-ethereum/rpc"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
-	"github.com/ethereum/go-ethereum/qcheckpoint"
+	"github.com/ethereum/go-ethereum/quorumcheckpoint"
 )
 
 const (
@@ -1240,10 +1240,10 @@ func submitTransaction(ctx context.Context, b Backend, tx *types.Transaction, is
 		}
 		addr := crypto.CreateAddress(from, tx.Nonce())
 		log.Info("Submitted contract creation", "fullhash", tx.Hash().Hex(), "to", addr.Hex())
-		qcheckpoint.Create(log.TxCreated, "tx", tx.Hash().Hex(), "to", addr.Hex())
+		quorumcheckpoint.Create(quorumcheckpoint.TxCreated, "tx", tx.Hash().Hex(), "to", addr.Hex())
 	} else {
 		log.Info("Submitted transaction", "fullhash", tx.Hash().Hex(), "recipient", tx.To())
-		qcheckpoint.Create(log.TxCreated, "tx", tx.Hash().Hex(), "to", tx.To().Hex())
+		quorumcheckpoint.Create(quorumcheckpoint.TxCreated, "tx", tx.Hash().Hex(), "to", tx.To().Hex())
 	}
 	return tx.Hash(), nil
 }

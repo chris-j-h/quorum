@@ -31,7 +31,7 @@ import (
 	"github.com/coreos/etcd/rafthttp"
 	"github.com/syndtr/goleveldb/leveldb"
 	"gopkg.in/fatih/set.v0"
-	"github.com/ethereum/go-ethereum/qcheckpoint"
+	"github.com/ethereum/go-ethereum/quorumcheckpoint"
 )
 
 type ProtocolManager struct {
@@ -533,10 +533,10 @@ func (pm *ProtocolManager) handleRoleChange(roleC <-chan interface{}) {
 			}
 
 			if intRole == minterRole {
-				qcheckpoint.Create(log.BecameMinter)
+				quorumcheckpoint.Create(quorumcheckpoint.BecameMinter)
 				pm.minter.start()
 			} else { // verifier
-				qcheckpoint.Create(log.BecameVerifier)
+				quorumcheckpoint.Create(quorumcheckpoint.BecameVerifier)
 				pm.minter.stop()
 			}
 
@@ -868,7 +868,7 @@ func (pm *ProtocolManager) applyNewChainHead(block *types.Block) {
 		}
 
 		for _, tx := range block.Transactions() {
-			qcheckpoint.Create(log.TxAccepted, "tx", tx.Hash().Hex())
+			quorumcheckpoint.Create(quorumcheckpoint.TxAccepted, "tx", tx.Hash().Hex())
 		}
 
 		_, err := pm.blockchain.InsertChain([]*types.Block{block})
@@ -877,7 +877,7 @@ func (pm *ProtocolManager) applyNewChainHead(block *types.Block) {
 			panic(fmt.Sprintf("failed to extend chain: %s", err.Error()))
 		}
 
-		qcheckpoint.Create(log.BlockCreated, "block", fmt.Sprintf("%x", block.Hash()))
+		quorumcheckpoint.Create(quorumcheckpoint.RaftBlockCreated, "number", block.Number(), "block", fmt.Sprintf("%x", block.Hash()))
 	}
 }
 

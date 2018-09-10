@@ -16,7 +16,7 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/rlp"
 	"gopkg.in/fatih/set.v0"
-	"github.com/ethereum/go-ethereum/qcheckpoint"
+	"github.com/ethereum/go-ethereum/quorumcheckpoint"
 )
 
 // Snapshot
@@ -327,7 +327,7 @@ func (pm *ProtocolManager) logNewlyAcceptedTransactions(preSyncHead *types.Block
 	}
 	for _, block := range blocks {
 		for _, tx := range block.Transactions() {
-			qcheckpoint.Create(log.TxAccepted, "tx", tx.Hash().Hex())
+			quorumcheckpoint.Create(quorumcheckpoint.TxAccepted, "tx", tx.Hash().Hex())
 		}
 	}
 }

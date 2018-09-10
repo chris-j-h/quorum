@@ -36,6 +36,7 @@ import (
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
 	"gopkg.in/fatih/set.v0"
+	"github.com/ethereum/go-ethereum/quorumcheckpoint"
 )
 
 const (
@@ -353,6 +354,7 @@ func (self *worker) wait() {
 			events = append(events, core.ChainEvent{Block: block, Hash: block.Hash(), Logs: logs})
 			if stat == core.CanonStatTy {
 				events = append(events, core.ChainHeadEvent{Block: block})
+				quorumcheckpoint.Create(quorumcheckpoint.BlockInserted, "number", block.Number(), "block", fmt.Sprintf("%x", block.Hash()))
 			}
 			self.chain.PostChainEvents(events, logs)
 
