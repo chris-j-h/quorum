@@ -7,7 +7,7 @@ import (
 
 const (
 	TxCreated          = "TX-CREATED"
-	TxAccepted         = "TX-ACCEPTED"
+	RaftTxAccepted     = "RAFT-TX-ACCEPTED"
 	BecameMinter       = "BECAME-MINTER"
 	BecameVerifier     = "BECAME-VERIFIER"
 	RaftBlockCreated   = "RAFT-BLOCK-CREATED"
@@ -41,7 +41,7 @@ func updateMetric(metricName string) {
 	switch metricName {
 	case TxCreated:
 		txCreatedMeter.Mark(1)
-	case TxAccepted:
+	case RaftTxAccepted:
 		txAcceptedMeter.Mark(1)
 	case RaftBlockCreated:
 		blockCreatedMeter.Mark(1)

@@ -327,7 +327,7 @@ func (pm *ProtocolManager) logNewlyAcceptedTransactions(preSyncHead *types.Block
 	}
 	for _, block := range blocks {
 		for _, tx := range block.Transactions() {
-			quorumcheckpoint.Create(quorumcheckpoint.TxAccepted, "tx", tx.Hash().Hex())
+			quorumcheckpoint.Create(quorumcheckpoint.RaftTxAccepted, "tx", tx.Hash().Hex())
 		}
 	}
 }

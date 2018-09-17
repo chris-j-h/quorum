@@ -868,7 +868,7 @@ func (pm *ProtocolManager) applyNewChainHead(block *types.Block) {
 		}
 
 		for _, tx := range block.Transactions() {
-			quorumcheckpoint.Create(quorumcheckpoint.TxAccepted, "tx", tx.Hash().Hex())
+			quorumcheckpoint.Create(quorumcheckpoint.RaftTxAccepted, "tx", tx.Hash().Hex())
 		}
 
 		_, err := pm.blockchain.InsertChain([]*types.Block{block})
