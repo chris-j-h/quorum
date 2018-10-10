@@ -1262,6 +1262,10 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 				"txs", len(block.Transactions()), "gas", block.GasUsed(), "elapsed", common.PrettyDuration(time.Since(bstart)))
 			quorumcheckpoint.Create(quorumcheckpoint.BlockInserted, "number", block.Number(), "block", fmt.Sprintf("%x", block.Hash()))
 
+			for _, tx := range block.Transactions() {
+				quorumcheckpoint.Create(quorumcheckpoint.CanonTxAccepted, "tx", tx.Hash().Hex())
+			}
+
 			coalescedLogs = append(coalescedLogs, logs...)
 			blockInsertTimer.UpdateSince(bstart)
 			events = append(events, ChainEvent{block, block.Hash(), logs})

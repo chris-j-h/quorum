@@ -356,6 +356,11 @@ func (self *worker) wait() {
 				events = append(events, core.ChainHeadEvent{Block: block})
 				quorumcheckpoint.Create(quorumcheckpoint.BlockInserted, "number", block.Number(), "block", fmt.Sprintf("%x", block.Hash()))
 			}
+
+			for _, tx := range block.Transactions() {
+				quorumcheckpoint.Create(quorumcheckpoint.CanonTxAccepted, "tx", tx.Hash().Hex())
+			}
+
 			self.chain.PostChainEvents(events, logs)
 
 			// Insert the block into the set of pending ones to wait for confirmations
