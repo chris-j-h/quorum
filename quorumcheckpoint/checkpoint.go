@@ -18,15 +18,14 @@ const (
 )
 
 var (
-	blockCreatedMeter = metrics.NewRegisteredMeter("quorum/raft-block-created", nil)
+	raftBlockCreatedMeter = metrics.NewRegisteredMeter("quorum/raft-block-created", nil)
 	blockInsertedMeter = metrics.NewRegisteredMeter("quorum/block-inserted", nil)
+	blockInsertedGauge = metrics.NewRegisteredGauge("quorum/block-inserted-gauge", nil)
 	txCreatedMeter = metrics.NewRegisteredMeter("quorum/tx-created", nil)
-	txAcceptedMeter = metrics.NewRegisteredMeter("quorum/tx-accepted", nil)
+	raftTxAcceptedMeter = metrics.NewRegisteredMeter("quorum/raft-tx-accepted", nil)
 	canonTxAcceptedMeter = metrics.NewRegisteredMeter("quorum/canon-tx-accepted", nil)
 
-	blockInsertedGauge = metrics.NewRegisteredGauge("quorum/block-inserted-gauge", nil)
-
- 	DoEmitCheckpoints = false
+	DoEmitCheckpoints = false
 )
 
 func Create(checkpointName string, logValues ...interface{}) {
@@ -47,11 +46,11 @@ func updateMetric(metricName string, logValues ...interface{}) {
 	case TxCreated:
 		txCreatedMeter.Mark(1)
 	case RaftTxAccepted:
-		txAcceptedMeter.Mark(1)
+		raftTxAcceptedMeter.Mark(1)
 	case CanonTxAccepted:
 		canonTxAcceptedMeter.Mark(1)
 	case RaftBlockCreated:
-		blockCreatedMeter.Mark(1)
+		raftBlockCreatedMeter.Mark(1)
 	case BlockInserted:
 		blockInsertedMeter.Mark(1)
 
