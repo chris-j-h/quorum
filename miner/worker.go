@@ -354,11 +354,11 @@ func (self *worker) wait() {
 			events = append(events, core.ChainEvent{Block: block, Hash: block.Hash(), Logs: logs})
 			if stat == core.CanonStatTy {
 				events = append(events, core.ChainHeadEvent{Block: block})
-				quorumcheckpoint.Create(quorumcheckpoint.BlockInserted, "number", block.Number(), "block", fmt.Sprintf("%x", block.Hash()))
-			}
+				quorumcheckpoint.Create(quorumcheckpoint.BlockInserted, "number", block.Number(), "block", fmt.Sprintf("%x", block.Hash()), "caller", "worker.go")
 
-			for _, tx := range block.Transactions() {
-				quorumcheckpoint.Create(quorumcheckpoint.CanonTxAccepted, "tx", tx.Hash().Hex())
+				for _, tx := range block.Transactions() {
+					quorumcheckpoint.Create(quorumcheckpoint.CanonTxAccepted, "tx", tx.Hash().Hex())
+				}
 			}
 
 			self.chain.PostChainEvents(events, logs)

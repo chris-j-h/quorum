@@ -1260,7 +1260,7 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		case CanonStatTy:
 			log.Debug("Inserted new block", "number", block.Number(), "hash", block.Hash(), "uncles", len(block.Uncles()),
 				"txs", len(block.Transactions()), "gas", block.GasUsed(), "elapsed", common.PrettyDuration(time.Since(bstart)))
-			quorumcheckpoint.Create(quorumcheckpoint.BlockInserted, "number", block.Number(), "block", fmt.Sprintf("%x", block.Hash()))
+			quorumcheckpoint.Create(quorumcheckpoint.BlockInserted, "number", block.Number(), "block", fmt.Sprintf("%x", block.Hash()), "caller", "blockchain.go")
 
 			for _, tx := range block.Transactions() {
 				quorumcheckpoint.Create(quorumcheckpoint.CanonTxAccepted, "tx", tx.Hash().Hex())
