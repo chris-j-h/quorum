@@ -1149,6 +1149,12 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		// If the chain is terminating, stop processing blocks
 		if atomic.LoadInt32(&bc.procInterrupt) == 1 {
 			log.Debug("Premature abort during blocks processing")
+			// QUORUM
+			if bc.chainConfig.IsQuorum && bc.chainConfig.Istanbul == nil && bc.chainConfig.Clique == nil {
+				// Only returns an error for raft mode
+				return i, events, coalescedLogs, ErrAbortBlocksProcessing
+			}
+			// END QUORUM
 			break
 		}
 		// If the header is a banned one, straight out abort
@@ -1271,9 +1277,8 @@ func (bc *BlockChain) insertChain(chain types.Blocks) (int, []interface{}, []*ty
 		if err := WritePrivateStateRoot(bc.db, block.Root(), privateStateRoot); err != nil {
 			return i, events, coalescedLogs, err
 		}
-		// /Quorum
-
 		allReceipts := mergeReceipts(receipts, privateReceipts)
+		// /Quorum
 
 		proctime := time.Since(bstart)
 
