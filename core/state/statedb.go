@@ -18,9 +18,11 @@
 package state
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/big"
+	"os"
 	"sort"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -609,6 +611,24 @@ func (s *StateDB) Finalise(deleteEmptyObjects bool) {
 // goes into transaction receipts.
 func (s *StateDB) IntermediateRoot(deleteEmptyObjects bool) common.Hash {
 	s.Finalise(deleteEmptyObjects)
+	stateRoot := s.trie.Hash().Hex()
+	log.Debug("DEBUGGING StateDB::IntermediateRoot - calculating state root", "root", stateRoot)
+	if stateRoot == "0x0f6d6606b447b6fd26392f999e84be08fdf8b71f956b83116017dbb371ea1f1a" || stateRoot == "0x8a6cab008e2572a774a3c1eadc36269fa65662471c088652853db94e38ff8e59" {
+		log.Debug("DEBUGGING StateDB::IntermediateRoot - one of the state roots we wanted", "stateRoot", s.trie.Hash().Hex())
+
+		filename := fmt.Sprintf("%v/2.5.0-dump-%v", os.TempDir(), stateRoot)
+		if _, err := os.Stat(filename); os.IsNotExist(err) {
+			f, err := os.Create(filename)
+			log.Info("DEBUGGING StateDB::IntermediateRoot - created file to write state dump to", "stateRoot", stateRoot, "filename", filename, "err", err)
+			stateOut := json.NewEncoder(f)
+
+			log.Info("DEBUGGING StateDB::IntermediateRoot - writing state dump to file", "stateRoot", stateRoot, "filename", filename)
+			s.IterativeDump(false, false, false, stateOut)
+			log.Info("DEBUGGING StateDB::IntermediateRoot - state dumped to file", "stateRoot", stateRoot, "filename", filename)
+		} else {
+			log.Debug("DEBUGGING StateDB::IntermediateRoot - file already exists, not dumping to file again", "stateRoot", stateRoot, "filename", filename)
+		}
+	}
 	return s.trie.Hash()
 }
 
