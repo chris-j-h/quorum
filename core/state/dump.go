@@ -171,17 +171,17 @@ func (s *StateDB) DumpToCollector(c DumpCollector, excludeCode, excludeStorage, 
 }
 
 // RawDump returns the entire state an a single large object
-func (s *StateDB) RawDump(excludeCode, excludeStorage, excludeMissingPreimages bool) Dump {
+func (s *StateDB) RawDump() Dump {
 	dump := &Dump{
 		Accounts: make(map[common.Address]DumpAccount),
 	}
-	s.DumpToCollector(dump, excludeCode, excludeStorage, excludeMissingPreimages, nil, 0)
+	s.DumpToCollector(dump, false, false, false, nil, 0)
 	return *dump
 }
 
 // Dump returns a JSON string representing the entire state as a single json-object
-func (s *StateDB) Dump(excludeCode, excludeStorage, excludeMissingPreimages bool) []byte {
-	dump := s.RawDump(excludeCode, excludeStorage, excludeMissingPreimages)
+func (s *StateDB) Dump() []byte {
+	dump := s.RawDump()
 	json, err := json.MarshalIndent(dump, "", "    ")
 	if err != nil {
 		fmt.Println("Dump err", err)
