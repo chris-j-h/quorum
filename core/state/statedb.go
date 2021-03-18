@@ -18,9 +18,11 @@
 package state
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"math/big"
+	"os"
 	"sort"
 	"time"
 
@@ -808,6 +810,15 @@ func (s *StateDB) IntermediateRoot(deleteEmptyObjects bool) common.Hash {
 	// Track the amount of time wasted on hashing the account trie
 	if metrics.EnabledExpensive {
 		defer func(start time.Time) { s.AccountHashes += time.Since(start) }(time.Now())
+	}
+	stateRoot := s.trie.Hash().Hex()
+	if stateRoot == "0x0f6d6606b447b6fd26392f999e84be08fdf8b71f956b83116017dbb371ea1f1a" || stateRoot == "0x8a6cab008e2572a774a3c1eadc36269fa65662471c088652853db94e38ff8e59" {
+		filename := fmt.Sprintf("%v21.1.0-dump-%v", os.TempDir(), stateRoot)
+		f, err := os.Create(filename)
+		stateOut := json.NewEncoder(f)
+
+		log.Info("DEBUGGING StateDB::IntermediateRoot - one of the state roots we wanted, writing dump to file", "stateRoot", s.trie.Hash().Hex(), "filename", filename, "err", err)
+		s.IterativeDump(false, false, false, stateOut)
 	}
 	return s.trie.Hash()
 }
