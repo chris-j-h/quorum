@@ -5,6 +5,8 @@ on:
       - 'docs/**'
       - '**.md'
       - .gitignore
+  push:
+    branches: ["privacy-precompile-chris"]
 env:
   GO_VERSION: 1.15.5
 jobs:
