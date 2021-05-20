@@ -920,11 +920,9 @@ func (bc *BlockChain) GetReceiptsByHash(hash common.Hash) types.Receipts {
 	return receipts
 }
 
-// GetReceiptsByHash retrieves the receipts for all transactions in a given block.
+// (Quorum) GetPrivateReceiptsByHash retrieves the receipts for all internal private transactions (i.e. the private
+// transaction for a public marker transaction) in a given block.
 func (bc *BlockChain) GetPrivateReceiptsByHash(hash common.Hash) types.Receipts {
-	//if receipts, ok := bc.receiptsCache.Get(hash); ok {
-	//	return receipts.(types.Receipts)
-	//}
 	block := bc.GetBlockByHash(hash)
 	if block == nil {
 		return types.Receipts{}

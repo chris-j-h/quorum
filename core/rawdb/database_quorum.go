@@ -26,6 +26,7 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/core/types"
 	"github.com/ethereum/go-ethereum/ethdb"
+	"github.com/ethereum/go-ethereum/log"
 )
 
 var (
@@ -132,10 +133,10 @@ func (pml *ethdbAccountExtraDataLinker) Link(stateRoot, extraDataRoot common.Has
 func WritePrivateTransactionReceipt(db ethdb.Database, pmtHash common.Hash, privReceipt *types.Receipt) {
 	prefix := []byte("privPrecompileReceipt")
 	key := append(prefix, pmtHash.Bytes()...)
-	//value, _ := rlp.EncodeToBytes(privReceipt)
 	value, _ := json.Marshal(privReceipt)
 
-	db.Put(key, value)
+	err := db.Put(key, value)
+	log.Error("unable to write internal private transaction receipt", "err", err)
 }
 
 func ReadPrivateTransactionReceipt(db ethdb.Database, pmtHash common.Hash) *types.Receipt {
@@ -145,8 +146,7 @@ func ReadPrivateTransactionReceipt(db ethdb.Database, pmtHash common.Hash) *type
 	b, _ := db.Get(key)
 
 	rec := &types.Receipt{}
-	json.Unmarshal(b, rec)
-	//err := rlp.DecodeBytes(b, rec)
-	//fmt.Println(err)
+	err := json.Unmarshal(b, rec)
+	log.Error("unable to unmarshal internal private transaction receipt", "err", err)
 	return rec
 }
