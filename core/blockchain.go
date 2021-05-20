@@ -929,8 +929,7 @@ func (bc *BlockChain) GetPrivateReceiptsByHash(hash common.Hash) types.Receipts 
 	}
 	recs := make([]*types.Receipt, 0)
 	for _, tx := range block.Transactions() {
-		//if tx.IsPrivateMarker() { TODO(peter): use method to check if marker
-		if tx.To() != nil && tx.To().String() == vm.PrivacyMarkerAddress().String() {
+		if tx.IsPrivacyMarker() {
 			recs = append(recs, rawdb.ReadPrivateTransactionReceipt(bc.db, tx.Hash()))
 		}
 	}

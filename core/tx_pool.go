@@ -28,7 +28,6 @@ import (
 	"github.com/ethereum/go-ethereum/common/prque"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/event"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/metrics"
@@ -566,8 +565,7 @@ func (pool *TxPool) validateTx(tx *types.Transaction, local bool) error {
 	}
 	if pool.chainconfig.IsQuorum {
 		// Quorum
-		//if tx.IsPrivateMarker() { TODO(peter): use method to check if marker
-		if tx.To() != nil && tx.To().String() == vm.PrivacyMarkerAddress().String() {
+		if tx.IsPrivacyMarker() {
 			innerTx, _, _ := private.FetchPrivateTransaction(tx.Data())
 			if innerTx != nil {
 				if err := pool.validateTx(innerTx, local); err != nil {
@@ -779,7 +777,7 @@ func (pool *TxPool) promoteTx(addr common.Address, hash common.Hash, tx *types.T
 		pool.priced.Put(tx)
 	}
 	// Set the potentially new pending nonce and notify any subsystems of the new tx
-	if tx.To() != nil && *tx.To() == vm.PrivacyMarkerAddress() && pool.isPrivacyMarkerTransactionCreationEnabled() {
+	if tx.IsPrivacyMarker() && pool.isPrivacyMarkerTransactionCreationEnabled() {
 		pool.pendingNonces.set(addr, tx.Nonce()+2)
 	} else {
 		pool.pendingNonces.set(addr, tx.Nonce()+1)
@@ -1131,7 +1129,7 @@ func (pool *TxPool) runReorg(done chan struct{}, reset *txpoolResetRequest, dirt
 	// Update all accounts to the latest known pending nonce
 	for addr, list := range pool.pending {
 		highestPending := list.LastElement()
-		if highestPending.To() != nil && *highestPending.To() == vm.PrivacyMarkerAddress() && pool.isPrivacyMarkerTransactionCreationEnabled() {
+		if highestPending.IsPrivacyMarker() && pool.isPrivacyMarkerTransactionCreationEnabled() {
 			pool.pendingNonces.set(addr, highestPending.Nonce()+2)
 		} else {
 			pool.pendingNonces.set(addr, highestPending.Nonce()+1)

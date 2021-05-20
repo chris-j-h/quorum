@@ -32,7 +32,6 @@ import (
 	"github.com/ethereum/go-ethereum/core/rawdb"
 	"github.com/ethereum/go-ethereum/core/state"
 	"github.com/ethereum/go-ethereum/core/types"
-	"github.com/ethereum/go-ethereum/core/vm"
 	"github.com/ethereum/go-ethereum/event"
 	"github.com/ethereum/go-ethereum/log"
 	"github.com/ethereum/go-ethereum/params"
@@ -638,7 +637,7 @@ func (w *worker) resultLoop() {
 				logs = append(logs, receipt.Logs...)
 
 				tx := block.Transaction(receipt.TxHash)
-				if tx.To() != nil && tx.To().String() == vm.PrivacyMarkerAddress().String() {
+				if tx.IsPrivacyMarker() {
 					if markerReceipt := rawdb.ReadPrivateTransactionReceipt(w.eth.ChainDb(), receipt.TxHash); markerReceipt != nil {
 						// add block location fields
 						markerReceipt.BlockHash = hash

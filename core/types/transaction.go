@@ -577,4 +577,8 @@ func (tx *Transaction) SetPrivate() {
 	}
 }
 
+func (tx *Transaction) IsPrivacyMarker() bool {
+	return tx.To() != nil && *tx.To() == common.QuorumPrivacyPrecompileContractAddress()
+}
+
 // End Quorum
