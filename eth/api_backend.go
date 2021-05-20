@@ -418,7 +418,7 @@ func (b *EthAPIBackend) IsAuthorized(ctx context.Context, authToken *proto.PreAu
 	return auth, nil
 }
 
-func (b *EthAPIBackend) QuorumCreatePrivacyMarkerTransactions() bool {
+func (b *EthAPIBackend) IsPrivacyMarkerTransactionCreationEnabled() bool {
 	return b.eth.config.QuorumPrivacyMarkerTransactionsEnabled && b.ChainConfig().IsQuorumPrecompilesV1Enabled(b.eth.blockchain.CurrentBlock().Number())
 }
 

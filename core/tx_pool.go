@@ -265,7 +265,9 @@ type TxPool struct {
 	reorgShutdownCh chan struct{}  // requests shutdown of scheduleReorgLoop
 	wg              sync.WaitGroup // tracks loop, scheduleReorgLoop
 
-	quorumCreatePrivacyMarkerTransactions func() bool
+	// (Quorum) isPrivacyMarkerTransactionCreationEnabled returns true if the node is configured to use privacy marker
+	// transactions and the fork block to make the necessary precompile available has been passed
+	isPrivacyMarkerTransactionCreationEnabled func() bool
 }
 
 type txpoolResetRequest struct {
@@ -777,7 +779,7 @@ func (pool *TxPool) promoteTx(addr common.Address, hash common.Hash, tx *types.T
 		pool.priced.Put(tx)
 	}
 	// Set the potentially new pending nonce and notify any subsystems of the new tx
-	if tx.To() != nil && *tx.To() == vm.PrivacyMarkerAddress() && pool.quorumCreatePrivacyMarkerTransactions() {
+	if tx.To() != nil && *tx.To() == vm.PrivacyMarkerAddress() && pool.isPrivacyMarkerTransactionCreationEnabled() {
 		pool.pendingNonces.set(addr, tx.Nonce()+2)
 	} else {
 		pool.pendingNonces.set(addr, tx.Nonce()+1)
@@ -1129,7 +1131,7 @@ func (pool *TxPool) runReorg(done chan struct{}, reset *txpoolResetRequest, dirt
 	// Update all accounts to the latest known pending nonce
 	for addr, list := range pool.pending {
 		highestPending := list.LastElement()
-		if highestPending.To() != nil && *highestPending.To() == vm.PrivacyMarkerAddress() && pool.quorumCreatePrivacyMarkerTransactions() {
+		if highestPending.To() != nil && *highestPending.To() == vm.PrivacyMarkerAddress() && pool.isPrivacyMarkerTransactionCreationEnabled() {
 			pool.pendingNonces.set(addr, highestPending.Nonce()+2)
 		} else {
 			pool.pendingNonces.set(addr, highestPending.Nonce()+1)
@@ -1502,8 +1504,8 @@ func (pool *TxPool) demoteUnexecutables() {
 	}
 }
 
-func (pool *TxPool) SetQuorumCreatePrivacyMarkerTransactions(fn func() bool) {
-	pool.quorumCreatePrivacyMarkerTransactions = fn
+func (pool *TxPool) SetIsPrivacyMarkerTransactionCreationEnabled(fn func() bool) {
+	pool.isPrivacyMarkerTransactionCreationEnabled = fn
 }
 
 // addressByHeartbeat is an account address tagged with its last activity timestamp.

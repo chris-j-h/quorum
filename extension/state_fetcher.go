@@ -29,7 +29,7 @@ type APIBackendHelper interface {
 	multitenancy.AuthorizationProvider
 	AccountExtraDataStateGetterByNumber(ctx context.Context, number rpc.BlockNumber) (vm.AccountExtraDataStateGetter, error)
 	CurrentBlock() *types.Block
-	QuorumCreatePrivacyMarkerTransactions() bool
+	IsPrivacyMarkerTransactionCreationEnabled() bool
 }
 
 // StateFetcher manages retrieving state from the database and returning it in

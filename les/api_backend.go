@@ -325,7 +325,7 @@ func (b *LesApiBackend) IsAuthorized(ctx context.Context, authToken *proto.PreAu
 	return auth, nil
 }
 
-func (b *LesApiBackend) QuorumCreatePrivacyMarkerTransactions() bool {
+func (b *LesApiBackend) IsPrivacyMarkerTransactionCreationEnabled() bool {
 	return b.eth.config.QuorumPrivacyMarkerTransactionsEnabled
 }
 

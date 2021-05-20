@@ -465,7 +465,7 @@ func TestSubmitPrivateTransaction(t *testing.T) {
 
 	stbBackend := &StubBackend{}
 	stbBackend.multitenancySupported = false
-	stbBackend.quorumPrivacyMarkerTransactionsEnabled = false
+	stbBackend.isPrivacyMarkerTransactionCreationEnabled = false
 	stbBackend.ks = keystore
 	stbBackend.accountManager = accounts.NewManager(&accounts.Config{InsecureUnlockAllowed: true}, stbBackend)
 	stbBackend.poolNonce = 999
@@ -498,7 +498,7 @@ func TestSubmitPrivateTransactionWithPrivacyMarkerEnabled(t *testing.T) {
 
 	stbBackend := &StubBackend{}
 	stbBackend.multitenancySupported = false
-	stbBackend.quorumPrivacyMarkerTransactionsEnabled = true
+	stbBackend.isPrivacyMarkerTransactionCreationEnabled = true
 	stbBackend.ks = keystore
 	stbBackend.accountManager = accounts.NewManager(&accounts.Config{InsecureUnlockAllowed: true}, stbBackend)
 
@@ -533,15 +533,15 @@ func createKeystore(t *testing.T) (*keystore.KeyStore, accounts.Account, account
 }
 
 type StubBackend struct {
-	getEVMCalled                           bool
-	sendTxCalled                           bool
-	txThatWasSent                          *types.Transaction
-	mockAccountExtraDataStateGetter        *vm.MockAccountExtraDataStateGetter
-	multitenancySupported                  bool
-	quorumPrivacyMarkerTransactionsEnabled bool
-	accountManager                         *accounts.Manager
-	ks                                     *keystore.KeyStore
-	poolNonce                              uint64
+	getEVMCalled                              bool
+	sendTxCalled                              bool
+	txThatWasSent                             *types.Transaction
+	mockAccountExtraDataStateGetter           *vm.MockAccountExtraDataStateGetter
+	multitenancySupported                     bool
+	isPrivacyMarkerTransactionCreationEnabled bool
+	accountManager                            *accounts.Manager
+	ks                                        *keystore.KeyStore
+	poolNonce                                 uint64
 }
 
 func (sb *StubBackend) CurrentHeader() *types.Header {
@@ -748,8 +748,8 @@ func (sb *StubBackend) SubscribePendingLogsEvent(ch chan<- []*types.Log) event.S
 	panic("implement me")
 }
 
-func (sb *StubBackend) QuorumCreatePrivacyMarkerTransactions() bool {
-	return sb.quorumPrivacyMarkerTransactionsEnabled
+func (sb *StubBackend) IsPrivacyMarkerTransactionCreationEnabled() bool {
+	return sb.isPrivacyMarkerTransactionCreationEnabled
 }
 
 type StubMinimalApiState struct {
