@@ -142,6 +142,12 @@ jobs:
           echo "TF_VAR_privacy_enhancements={block=0, enabled=${{ matrix.privacy-enhancements}}}" >> $docker_env_file
           echo "::set-output name=outputDir::${{ runner.temp }}"
           echo "::set-output name=dockerEnvFile::$docker_env_file"
+      -   name: 'Load AccTests and Tessera Docker Images'
+          run: |
+            acctests_docker_image="ghcr.io/chris-j-h/quorum-acceptance-tests/acctests:dev-master-with-debug"
+            docker pull $acctests_docker_image
+            # replacing the acctests image to run
+            docker tag $acctests_docker_image quorumengineering/acctests:latest
       - name: 'Run acceptance tests'
         run: |
           cat ${{ steps.setup.outputs.dockerEnvFile }}
