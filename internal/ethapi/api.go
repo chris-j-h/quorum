@@ -1818,7 +1818,7 @@ func (args *PrivateTxArgs) SetRawTransactionPrivateFrom(ctx context.Context, b B
 			return err
 		}
 		if psm.NotIncludeAny(args.PrivateFrom) {
-			return fmt.Errorf("The PrivateFrom address does not match the specified private state (%s) ", psm.ID)
+			return fmt.Errorf("The PrivateFrom address does not match the specified private state - PSI = %s, available PSI addresses = %s, privateFrom = %s) ", psm.ID, psm.Addresses, args.PrivateFrom)
 		}
 	}
 	return nil
