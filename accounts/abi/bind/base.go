@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/log"
 	"math/big"
 
 	"github.com/ethereum/go-ethereum"
@@ -270,18 +271,31 @@ func (c *BoundContract) transact(opts *TransactOpts, contract *common.Address, i
 	// If this transaction is private, we need to substitute the data payload
 	// with the hash of the transaction from tessera/constellation.
 	if opts.PrivateFor != nil {
+		log.Info("CHRISSY BoundContract::transact - private transaction, doing Q2T/storeraw before signing", "txOpts.PrivateFrom", opts.PrivateFrom)
 		var payload []byte
 		hash, err := c.transactor.PreparePrivateTransaction(rawTx.Data(), opts.PrivateFrom)
 		if err != nil {
 			return nil, err
 		}
+		log.Info("CHRISSY BoundContract::transact - private transaction, Q2T/storeraw done")
 		payload = hash.Bytes()
 		rawTx = c.createPrivateTransaction(rawTx, payload)
 
 		if opts.IsUsingPrivacyPrecompile {
-			rawTx, _ = c.createMarkerTx(opts, rawTx, PrivateTxArgs{PrivateFor: opts.PrivateFor})
+			log.Info("CHRISSY BoundContract::transact - private transaction, creating PMT")
+			rawTx, err = c.createMarkerTx(opts, rawTx, PrivateTxArgs{PrivateFor: opts.PrivateFor})
+			if err != nil {
+				log.Error("CHRISSY BoundContract::transact - private transaction, unable to create PMT", "err", err)
+			} else {
+				log.Info("CHRISSY BoundContract::transact - private transaction, PMT created")
+			}
 			opts.PrivateFor = nil
+		} else {
+			log.Info("CHRISSY BoundContract::transact - private transaction, not using PMTs")
 		}
+		log.Info("CHRISSY BoundContract::transact - private transaction, ready to sign")
+	} else {
+		log.Info("CHRISSY BoundContract::transact - public transaction, ready to sign")
 	}
 
 	// Choose signer to sign transaction

@@ -249,6 +249,7 @@ func (c *Client) nextID() json.RawMessage {
 				log.Warn("Generate regular ID without PSI", "err", err)
 				return idBytes
 			}
+			log.Info("CHRISSY Client::nextID - PSIProvider provided PSI %v", psi)
 			idBytes = encodePSI(idBytes, psi)
 		}
 	}

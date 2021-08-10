@@ -1804,6 +1804,7 @@ func (args *PrivateTxArgs) SetDefaultPrivateFrom(ctx context.Context, b Backend)
 func (args *PrivateTxArgs) SetRawTransactionPrivateFrom(ctx context.Context, b Backend, tx *types.Transaction) error {
 	if args.PrivateFor != nil && b.ChainConfig().IsMPS {
 		retrievedPrivateFrom, err := getRawTransactionPrivateFrom(tx)
+		log.Info("CHRISSY PrivateTxArgs::SetRawTransactionPrivateFrom", "retrievedPrivateFrom", retrievedPrivateFrom)
 		if err != nil {
 			return err
 		}
