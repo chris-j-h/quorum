@@ -218,6 +218,8 @@ func (c *BoundContract) Transfer(opts *TransactOpts) (*types.Transaction, error)
 // transact executes an actual transaction invocation, first deriving any missing
 // authorization fields, and then scheduling the transaction for execution.
 func (c *BoundContract) transact(opts *TransactOpts, contract *common.Address, input []byte) (*types.Transaction, error) {
+	log.Info("CHRISSY BoundContract::transact - enter", "opts", *opts)
+
 	var err error
 
 	// Ensure a valid value field and resolve the account nonce

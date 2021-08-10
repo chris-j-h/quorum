@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/ethereum/go-ethereum/log"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -219,6 +220,8 @@ func (api *PrivateExtensionAPI) ApproveExtension(ctx context.Context, addressToV
 // - the new PTM public key
 // - the Ethereum addresses of who can vote to extend the contract
 func (api *PrivateExtensionAPI) ExtendContract(ctx context.Context, toExtend common.Address, newRecipientPtmPublicKey string, recipientAddr common.Address, txa ethapi.SendTxArgs) (string, error) {
+	log.Info("CHRISSY PrivateExtensionAPI::ExtendContract - enter", "txArgs", txa)
+
 	// check if the contract to be extended is already under extension
 	// if yes throw an error
 	if api.checkIfContractUnderExtension(ctx, toExtend) {
@@ -322,6 +325,8 @@ func (api *PrivateExtensionAPI) ExtendContract(ctx context.Context, toExtend com
 // CancelExtension allows the creator to cancel the given extension contract, ensuring
 // that no more calls for votes or accepting can be made
 func (api *PrivateExtensionAPI) CancelExtension(ctx context.Context, extensionContract common.Address, txa ethapi.SendTxArgs) (string, error) {
+	log.Info("CHRISSY PrivateExtensionAPI::CancelExtension - enter", "txArgs", txa)
+
 	err := api.doMultiTenantChecks(ctx, txa.From, txa)
 	if err != nil {
 		return "", err
