@@ -197,7 +197,8 @@ jobs:
           docker load --input quorum-pr.tar
           docker_env_file="${{ runner.temp }}/env.list"
           echo "TF_VAR_quorum_docker_image={ name = \"quorumengineering/quorum:pr\", local = true }" >> $docker_env_file
-          echo "TF_VAR_privacy_enhancements={block=0, enabled=${{ matrix.privacy-enhancements}}}" >> $docker_env_file
+          echo "TF_VAR_privacy_precompile={ block = 0, enabled = ${{ matrix.privacy_precompile}} }" >> $docker_env_file
+          echo "TF_VAR_privacy_marker_transactions=${{ matrix.privacy-marker-transactions}}" >> $docker_env_file
           echo "::set-output name=outputDir::${{ runner.temp }}"
           echo "::set-output name=dockerEnvFile::$docker_env_file"
       # START: remove the below once PR is ready
