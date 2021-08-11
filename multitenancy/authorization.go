@@ -55,7 +55,7 @@ func isAuthorized(authToken *proto.PreAuthenticatedAuthenticationToken, attr *Pr
 			continue
 		}
 		isMatched := match(askValue, grantedValue)
-		log.Debug("Checking private state access", "passed", isMatched, "granted", grantedValue, "ask", askValue)
+		log.Info("CHRISSY multitenancy.isAuthorised - Checking private state access", "passed", isMatched, "granted", grantedValue, "ask", askValue)
 		if isMatched {
 			return true, nil
 		}

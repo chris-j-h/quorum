@@ -76,7 +76,8 @@ func (api *PrivateExtensionAPI) checkAlreadyVoted(addressToVoteOn, from common.A
 func (api *PrivateExtensionAPI) checkIfExtensionComplete(addressToVoteOn, from common.Address, psi types.PrivateStateIdentifier) (bool, error) {
 	psiManagementContractClient := api.privacyService.managementContract(psi)
 	defer psiManagementContractClient.Close()
-	caller, _ := psiManagementContractClient.Caller(addressToVoteOn)
+	caller, err := psiManagementContractClient.Caller(addressToVoteOn)
+	log.Info("CHRISSY PrivateExtensionAPI::checkIfExtensionComplete", "err", err)
 	opts := bind.CallOpts{Pending: true, From: from}
 
 	status, err := caller.CheckIfExtensionFinished(&opts)
@@ -119,17 +120,22 @@ func (api *PrivateExtensionAPI) checkIfPrivateStateExists(psi types.PrivateState
 }
 
 func (api *PrivateExtensionAPI) doMultiTenantChecks(ctx context.Context, address common.Address, txa ethapi.SendTxArgs) error {
+	log.Info("CHRISSY PrivateExtensionAPI::doMultiTenantChecks - enter")
+	defer log.Info("CHRISSY PrivateExtensionAPI::doMultiTenantChecks - exit")
+
 	backendHelper := api.privacyService.apiBackendHelper
 	if token, ok := backendHelper.SupportsMultitenancy(ctx); ok {
 		psm, err := backendHelper.PSMR().ResolveForUserContext(ctx)
 		if err != nil {
 			return err
 		}
+		log.Info("CHRISSY PrivateExtensionAPI::doMultiTenantChecks - ResolveForUserContext", "psm", psm.String())
 		eoaSecAttr := (&multitenancy.PrivateStateSecurityAttribute{}).WithPSI(psm.ID).WithNodeEOA(address)
 		psm, err = backendHelper.PSMR().ResolveForManagedParty(txa.PrivateFrom)
 		if err != nil {
 			return err
 		}
+		log.Info("CHRISSY PrivateExtensionAPI::doMultiTenantChecks - ResolveForManagedParty", "txa.PrivateFrom", txa.PrivateFrom, "psm", psm.String())
 		privateFromSecAttr := (&multitenancy.PrivateStateSecurityAttribute{}).WithPSI(psm.ID).WithNodeEOA(address)
 		if isAuthorized, _ := multitenancy.IsAuthorized(token, eoaSecAttr, privateFromSecAttr); !isAuthorized {
 			return multitenancy.ErrNotAuthorized
@@ -336,6 +342,9 @@ func (api *PrivateExtensionAPI) CancelExtension(ctx context.Context, extensionCo
 	if err != nil {
 		return "", err
 	}
+
+	log.Info("CHRISSY PrivateExtensionAPI::CancelExtension - ResolveForUserContext", "psm", psm.String())
+
 	// get all participants for the contract being extended
 	status, err := api.checkIfExtensionComplete(extensionContract, txa.From, psm.ID)
 	if err != nil {
@@ -373,7 +382,7 @@ func (api *PrivateExtensionAPI) CancelExtension(ctx context.Context, extensionCo
 	if err != nil {
 		return "", err
 	}
-
+	log.Info("CHRISSY PrivateExtensionAPI::CancelExtension - calling Finish() on management contract")
 	tx, err := extender.Finish(txArgs)
 	if err != nil {
 		return "", err
