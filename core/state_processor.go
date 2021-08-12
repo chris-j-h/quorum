@@ -210,8 +210,6 @@ func handleMPS(ti int, tx *types.Transaction, gp *GasPool, usedGas *uint64, cfg 
 func ApplyTransactionOnMPS(config *params.ChainConfig, bc *BlockChain, author *common.Address, originalGP *GasPool,
 	publicStateDBFactory func() *state.StateDB, privateStateDBFactory func(psi types.PrivateStateIdentifier) (*state.StateDB, error),
 	header *types.Header, tx *types.Transaction, usedGas *uint64, cfg vm.Config, privateStateRepo mps.PrivateStateRepository, applyOnPartiesOnly bool) (*types.Receipt, error) {
-	// clone the gas pool (as we don't want to keep consuming intrinsic gas multiple times for each MPS execution)
-	gp := new(GasPool).AddGas(originalGP.Gas())
 	mpsReceipt := &types.Receipt{
 		QuorumReceiptExtraData: types.QuorumReceiptExtraData{
 			PSReceipts: make(map[types.PrivateStateIdentifier]*types.Receipt),
@@ -233,6 +231,8 @@ func ApplyTransactionOnMPS(config *params.ChainConfig, bc *BlockChain, author *c
 	// execute in all the managed private states
 	// TODO this could be enhanced to run in parallel
 	for _, psi := range bc.PrivateStateManager().PSIs() {
+		// clone the gas pool (as we don't want to keep consuming intrinsic gas multiple times for each MPS execution)
+		gp := new(GasPool).AddGas(originalGP.Gas())
 		if cfg.ApplyOnPartyOverride != nil && *cfg.ApplyOnPartyOverride != psi {
 			continue
 		}
@@ -408,9 +408,10 @@ func ApplyInnerTransaction(bc *BlockChain, author *common.Address, gp *GasPool, 
 	if !innerTx.IsPrivate() {
 		return errors.New("attempt to process non-private transaction from within ApplyInnerTransaction()")
 	}
+	singleUseGasPool := new(GasPool).AddGas(innerTx.Gas())
 
 	if privateStateRepo != nil && privateStateRepo.IsMPS() {
-		mpsReceipt, err := handleMPS(txIndex, innerTx, gp, usedGas, evmConf, stateDB, privateStateRepo, bc.Config(), bc, header, true)
+		mpsReceipt, err := handleMPS(txIndex, innerTx, singleUseGasPool, usedGas, evmConf, stateDB, privateStateRepo, bc.Config(), bc, header, true)
 		if err != nil {
 			return err
 		}
@@ -423,7 +424,6 @@ func ApplyInnerTransaction(bc *BlockChain, author *common.Address, gp *GasPool, 
 	defer prepareStates(outerTx, stateDB, privateStateDB, txIndex)
 	prepareStates(innerTx, stateDB, privateStateDB, txIndex)
 
-	singleUseGasPool := new(GasPool).AddGas(innerTx.Gas())
 	used := uint64(0)
 
 	_, innerPrivateReceipt, err := ApplyTransaction(bc.Config(), bc, author, singleUseGasPool, stateDB, privateStateDB, header, innerTx, &used, evmConf, forceNonParty, privateStateRepo)
