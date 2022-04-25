@@ -411,6 +411,8 @@ func geth(ctx *cli.Context) error {
 // it unlocks any requested accounts, and starts the RPC/IPC interfaces and the
 // miner.
 func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend) {
+	log.Info("CHRISSY startNode")
+
 	log.DoEmitCheckpoints = ctx.GlobalBool(utils.EmitCheckpointsFlag.Name)
 	debug.Memsize.Add("node", stack)
 
@@ -419,10 +421,13 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend) {
 		utils.Fatalf("raft consensus does not support --exitwhensynced")
 	}
 
+	log.Info("CHRISSY enter utils.StartNode")
 	// Start up the node itself
 	utils.StartNode(ctx, stack)
+	log.Info("CHRISSY exit utils.StartNode")
 
 	// Now that the plugin manager has been started we register the account plugin with the corresponding account backend.  All other account management is disabled when using External Signer
+	log.Info("CHRISSY start registering account plugin with account backed")
 	if !ctx.IsSet(utils.ExternalSignerFlag.Name) && stack.PluginManager().IsEnabled(plugin.AccountPluginInterfaceName) {
 		log.Info("CHRISSY (1) adding account plugin to backend")
 		b := stack.AccountManager().Backends(pluggable.BackendType)[0].(*pluggable.Backend)
@@ -430,6 +435,7 @@ func startNode(ctx *cli.Context, stack *node.Node, backend ethapi.Backend) {
 			log.Error("failed to setup account plugin", "err", err)
 		}
 	}
+	log.Info("CHRISSY maybe registered account plugin with account backed")
 
 	// Unlock any account specifically requested
 	unlockAccounts(ctx, stack)
