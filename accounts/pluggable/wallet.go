@@ -2,6 +2,7 @@ package pluggable
 
 import (
 	"context"
+	"github.com/ethereum/go-ethereum/log"
 	"math/big"
 	"sync"
 	"time"
@@ -24,6 +25,7 @@ func (w *wallet) setPluginService(s plugin.Service) error {
 	w.mu.Lock()
 	defer w.mu.Unlock()
 
+	log.Info("CHRISSY (2) setting plugin service in wallet")
 	w.pluginService = s
 
 	return nil

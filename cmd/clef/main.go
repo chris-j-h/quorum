@@ -1268,6 +1268,7 @@ func startClefAccountManagerWithPlugins(c *cli.Context, ksLocation string, nousb
 
 	// <Quorum> setup the pluggable accounts backend with the plugin
 	if pm != nil && pm.IsEnabled(plugin.AccountPluginInterfaceName) {
+		log.Info("CHRISSY (1) (clef) adding account plugin to backend")
 		b := am.Backends(pluggable.BackendType)[0].(*pluggable.Backend)
 		if err := pm.AddAccountPluginToBackend(b); err != nil {
 			return nil, nil, err

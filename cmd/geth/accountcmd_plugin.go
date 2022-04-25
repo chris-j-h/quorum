@@ -288,6 +288,7 @@ func setupAccountPluginForCLI(ctx *cli.Context) (*accountPlugin, error) {
 		return nil, fmt.Errorf("unable to start plugin manager: %v", err)
 	}
 
+	log.Info("CHRISSY (1) (cli) adding account plugin to backend")
 	b := stack.AccountManager().Backends(pluggable.BackendType)[0].(*pluggable.Backend)
 	if err := pm.AddAccountPluginToBackend(b); err != nil {
 		return nil, fmt.Errorf("unable to load pluggable account backend: %v", err)
