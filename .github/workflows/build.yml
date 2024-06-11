@@ -8,6 +8,7 @@ on:
       - '.gitignore'
     branches:
       - master
+      - test
 env:
   GO_VERSION: 1.21.3
   GOPATH: ${{ github.workspace }}/go
