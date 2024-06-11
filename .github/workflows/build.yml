@@ -1,11 +1,6 @@
 name: Build Check
 on:
   push:
-    paths-ignore:
-      - 'docs/**'
-      - '**.md'
-      - 'mkdocs.yml'
-      - '.gitignore'
     branches:
       - master
       - test
