@@ -77,7 +77,7 @@ jobs:
         # for PR, only selective tests are run.
         # More comprehensive suites are scheduled to run in master
         tag:
-          - '(basic && !nosupport && !mps && !(spam && !raw) && !eth-api-signed && !privacy-enhancements-disabled && !graphql && !async && !extension && !storage-root && !personal-api-signed) || networks/typical-hybrid::hybrid'
+          - 'privacy-enhancements-upgrade || networks/template::istanbul-4nodes-pe'
     runs-on: ubuntu-20.04
     steps:
       - name: 'Download workflow artifact - Docker image'
