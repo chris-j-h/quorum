@@ -41,6 +41,7 @@ jobs:
         # for PR, only selective tests are run.
         # More comprehensive suites are scheduled to run in master
         tag:
+          - 'basic || basic-raft || networks/typical::raft'
           - 'privacy-enhancements-upgrade || networks/template::istanbul-4nodes-pe'
           - 'mps-mixed-network-psr-check || networks/template::raft-4nodes-mps-mixed'
     runs-on: ubuntu-20.04
