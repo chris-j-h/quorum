@@ -75,6 +75,10 @@ jobs:
       - name: 'Debug'
         if: always()
         run: |
+          sudo apt-get install tree
+          echo "tree ${{ steps.setup.outputs.outputDir }}"
+          tree ${{ steps.setup.outputs.outputDir }}
+          
           echo "docker images"
           docker images        
           echo "docker ps -a"
