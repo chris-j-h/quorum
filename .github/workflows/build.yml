@@ -87,6 +87,7 @@ jobs:
           for container in $containers
           do
             echo "Container: $container"
+            echo "docker logs $container"
             docker logs $container
             echo ================================
           done
